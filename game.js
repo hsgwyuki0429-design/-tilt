@@ -70,16 +70,16 @@ function renderStageGrid(){const grid=$('stageGrid');grid.innerHTML='';let done=
 
 function resize(){const r=canvas.getBoundingClientRect();const dpr=Math.max(1,Math.min(3,window.devicePixelRatio||1));canvas.width=Math.round(r.width*dpr);canvas.height=Math.round(r.height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);draw()}
 function roundRect(c,x,y,w,h,r){const rr=Math.min(r,w/2,h/2);c.beginPath();c.moveTo(x+rr,y);c.arcTo(x+w,y,x+w,y+h,rr);c.arcTo(x+w,y+h,x,y+h,rr);c.arcTo(x,y+h,x,y,rr);c.arcTo(x,y,x+w,y,rr);c.closePath()}
-function draw(){const size=STAGES[appState.stageIndex]?.size||5;const w=canvas.clientWidth,h=canvas.clientHeight;ctx.clearRect(0,0,w,h);if(!size)return;const pad=5,cell=(Math.min(w,h)-pad*2)/size;const ox=(w-cell*size)/2,oy=(h-cell*size)/2;
+function draw(){const st=STAGES[appState.stageIndex];if(!st||!ctx)return;const rect=canvas.getBoundingClientRect();const w=rect.width,h=rect.height;if(w<=0||h<=0)return;const size=st.size;ctx.setTransform((canvas.width/w),0,0,(canvas.height/h),0,0);ctx.clearRect(0,0,w,h);const pad=5,cell=(Math.min(w,h)-pad*2)/size;const ox=(w-cell*size)/2,oy=(h-cell*size)/2;
   const bg=ctx.createLinearGradient(0,0,w,h);bg.addColorStop(0,'#19232d');bg.addColorStop(1,'#0d131a');ctx.fillStyle=bg;roundRect(ctx,0,0,w,h,20);ctx.fill();
   // subtle board grid
   ctx.strokeStyle='rgba(255,255,255,.055)';ctx.lineWidth=1;for(let i=0;i<=size;i++){ctx.beginPath();ctx.moveTo(ox+i*cell,oy);ctx.lineTo(ox+i*cell,oy+size*cell);ctx.stroke();ctx.beginPath();ctx.moveTo(ox,oy+i*cell);ctx.lineTo(ox+size*cell,oy+i*cell);ctx.stroke()}
   for(const [key] of appState.walls){const [x,y]=key.split(',').map(Number);drawGlassRect(ox+x*cell+2,oy+y*cell+2,cell-4,cell-4,'#566372',.66,false)}
   for(const g of appState.goals){drawGoal(ox+g.x*cell+5,oy+g.y*cell+5,cell-10,g.c)}
-  for(const b of appState.blocks){drawBlock(ox+b.x*cell+4,oy+b.y*cell+4,b.w*cell-8,b.h*cell-8,COLORS[b.c%COLORS.length])}
+  for(const b of appState.blocks){const color=COLORS[(Number.isFinite(b.c)?b.c:0)%COLORS.length];const bw=Math.max(6,b.w*cell-8),bh=Math.max(6,b.h*cell-8);drawBlock(ox+b.x*cell+4,oy+b.y*cell+4,bw,bh,color)}
 }
 function drawGlassRect(x,y,w,h,c,a=1,glow=true){ctx.save();if(glow){ctx.shadowColor=c;ctx.shadowBlur=16}const gr=ctx.createLinearGradient(x,y,x+w,y+h);gr.addColorStop(0,`rgba(255,255,255,.34)`);gr.addColorStop(.18,hexToRgba(c,.75));gr.addColorStop(1,hexToRgba(c,.35));ctx.fillStyle=gr;roundRect(ctx,x,y,w,h,Math.min(12,w*.2));ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='rgba(255,255,255,.2)';ctx.lineWidth=1;ctx.stroke();ctx.restore()}
-function drawBlock(x,y,w,h,color){ctx.save();ctx.shadowColor=color;ctx.shadowBlur=20;drawGlassRect(x,y,w,h,color,.95,true);ctx.shadowBlur=0;const hi=ctx.createLinearGradient(x,y,x+w,y+h);hi.addColorStop(0,'rgba(255,255,255,.55)');hi.addColorStop(.25,'rgba(255,255,255,.08)');hi.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=hi;roundRect(ctx,x+2,y+2,w-4,h-4,11);ctx.fill();ctx.restore()}
+function drawBlock(x,y,w,h,color){if(w<=0||h<=0)return;ctx.save();ctx.shadowColor=color;ctx.shadowBlur=20;drawGlassRect(x,y,w,h,color,.95,true);ctx.shadowBlur=0;const hi=ctx.createLinearGradient(x,y,x+w,y+h);hi.addColorStop(0,'rgba(255,255,255,.55)');hi.addColorStop(.25,'rgba(255,255,255,.08)');hi.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=hi;roundRect(ctx,x+2,y+2,w-4,h-4,11);ctx.fill();ctx.restore()}
 function drawGoal(x,y,s,c){ctx.save();ctx.strokeStyle=c==null?'rgba(210,230,255,.65)':COLORS[c%COLORS.length];ctx.lineWidth=2;ctx.setLineDash([5,4]);ctx.shadowColor=ctx.strokeStyle;ctx.shadowBlur=12;roundRect(ctx,x,y,s,s,11);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='rgba(255,255,255,.03)';ctx.fill();ctx.restore()}
 function hexToRgba(hex,a){const n=parseInt(hex.replace('#',''),16);return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`}
 function burst(){const r=canvas.getBoundingClientRect(),x=r.width/2,y=r.height/2;for(let i=0;i<24;i++){const ang=Math.random()*Math.PI*2,spd=40+Math.random()*100;const sx=x,sy=y,ex=x+Math.cos(ang)*spd,ey=y+Math.sin(ang)*spd;ctx.strokeStyle=COLORS[i%COLORS.length];ctx.globalAlpha=.7;ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ex,ey);ctx.stroke()}ctx.globalAlpha=1}
@@ -105,4 +105,4 @@ $('pauseBtn').onclick=()=>{$('pauseOverlay').classList.add('active');appState.st
 window.addEventListener('resize',resize);window.addEventListener('orientationchange',()=>setTimeout(resize,180));window.addEventListener('deviceorientation',onOrientation);canvas.addEventListener('pointerdown',onPointerDown);canvas.addEventListener('pointerup',onPointerUp);canvas.addEventListener('pointercancel',()=>swipeStart=null);
 
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&appState.state==='PLAYING'){appState.state='PAUSE';$('pauseOverlay').classList.add('active')}});
-loadSave();renderStageGrid();resize();
+loadSave();renderStageGrid();requestAnimationFrame(()=>{resize();draw();});
