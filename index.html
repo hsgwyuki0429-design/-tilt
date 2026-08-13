@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+<meta name="theme-color" content="#0d1118" />
+<title>TILT — 傾ける。考える。解く。</title>
+<link rel="icon" href="data:,">
+<style>
+:root{--bg:#0d1118;--panel:#151b24;--panel2:#1b2430;--text:#edf5ff;--muted:#94a3b8;--accent:#8ee6ff;--accent2:#9aa8ff;--good:#8ff0b3;--danger:#ff9b9b;--cell:48px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;background:radial-gradient(circle at 50% 10%,#1b2b3a 0,#0d1118 45%,#090c12 100%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Hiragino Sans",sans-serif;overflow:hidden;touch-action:none}
+button{font:inherit;color:inherit}
+#app{height:100%;display:flex;flex-direction:column;position:relative}
+.header{height:calc(58px + env(safe-area-inset-top));padding:env(safe-area-inset-top) 14px 0;display:flex;align-items:center;justify-content:space-between;flex:0 0 auto}
+.brand{font-size:18px;font-weight:800;letter-spacing:.16em}
+.meta{display:flex;gap:8px;align-items:center}
+.chip{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);border-radius:999px;padding:7px 11px;font-size:12px;color:#d9e5f4;backdrop-filter:blur(10px)}
+.screen{position:absolute;inset:0;display:none;flex-direction:column}
+.screen.active{display:flex}
+.center{display:flex;align-items:center;justify-content:center;flex:1;padding:20px}
+.titleWrap{text-align:center;max-width:420px}
+.logo{font-size:72px;line-height:1;font-weight:900;letter-spacing:.16em;margin-left:.16em;background:linear-gradient(130deg,#fff,#a6efff 45%,#b5c0ff);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 30px rgba(150,235,255,.2)}
+.tag{margin:14px 0 28px;color:#c2cedd;font-size:15px;letter-spacing:.12em}
+.primary{border:0;background:linear-gradient(135deg,#8fe7ff,#8f9dff);color:#071018;border-radius:16px;padding:14px 28px;font-weight:800;font-size:16px;box-shadow:0 10px 35px rgba(127,214,255,.22)}
+.secondary{border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.045);border-radius:14px;padding:11px 15px}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.hint{font-size:12px;color:var(--muted);margin-top:18px;line-height:1.6}
+.menuTitle{font-size:25px;font-weight:800;margin-bottom:14px;text-align:center}
+.stageGrid{width:min(720px,100%);display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:10px 0 22px;overflow:auto;max-height:72vh}
+.stageBtn{aspect-ratio:1;border-radius:15px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.045);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.stageBtn.locked{opacity:.35}.stageBtn.done{border-color:rgba(143,240,179,.35)}
+.stageNum{font-size:18px;font-weight:800}.stars{font-size:11px;color:#9de6ff;letter-spacing:1px}
+.playArea{flex:1;display:flex;align-items:center;justify-content:center;padding:8px 14px 20px;min-height:0}
+.boardShell{position:relative;max-width:min(92vw,720px);max-height:min(68vh,720px);width:min(92vw,720px);aspect-ratio:1;border-radius:26px;padding:9px;background:linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.025));box-shadow:0 30px 80px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.11)}
+canvas{width:100%;height:100%;display:block;border-radius:19px}
+.bottom{height:94px;padding:8px 14px calc(8px + env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-between;gap:10px;flex:0 0 auto}
+.ctrl{min-width:66px;height:48px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.045);font-weight:700}
+.ctrl:active{transform:scale(.97)}
+.titleLine{font-size:13px;color:#b8c5d5;text-align:center;flex:1;line-height:1.3}
+.pause{position:absolute;inset:0;background:rgba(7,11,16,.62);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;z-index:5}
+.pause.active{display:flex}
+.modal{width:min(92vw,390px);background:linear-gradient(145deg,#1a2530,#121820);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:24px;box-shadow:0 24px 80px rgba(0,0,0,.45);text-align:center}
+.modal h2{margin:0 0 8px;font-size:25px}.modal p{margin:0 0 18px;color:#a9b6c7;font-size:13px;line-height:1.6}
+.clearBurst{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:42px;font-weight:900;letter-spacing:.08em;opacity:0;pointer-events:none;text-shadow:0 0 30px rgba(150,240,255,.55)}
+.clearBurst.show{animation:clear .8s ease-out both}@keyframes clear{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}20%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.2)}}
+.sensorBar{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);font-size:11px;color:#98a9bc;background:rgba(8,12,17,.72);border:1px solid rgba(255,255,255,.08);padding:6px 10px;border-radius:999px;display:none;z-index:4}
+.sensorBar.show{display:block}
+.toast{position:absolute;left:50%;top:calc(68px + env(safe-area-inset-top));transform:translate(-50%,-16px);background:rgba(10,15,22,.86);border:1px solid rgba(255,255,255,.08);padding:8px 12px;border-radius:12px;color:#d9e4f2;font-size:12px;opacity:0;pointer-events:none;transition:.25s;z-index:10}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (min-width:700px){.header{height:74px}.bottom{height:105px}.playArea{padding-bottom:24px}}
+@media (max-width:420px){.logo{font-size:58px}.stageGrid{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<div id="app">
+  <section id="titleScreen" class="screen active">
+    <div class="header"><div class="brand">TILT</div><div class="meta"><div class="chip">TILT · THINK · SOLVE</div></div></div>
+    <div class="center"><div class="titleWrap"><div class="logo">TILT</div><div class="tag">傾ける。考える。解く。</div><div class="row"><button id="playBtn" class="primary">PLAY</button><button id="stageBtn" class="secondary">STAGES</button></div><div class="hint">スマホを傾けるか、画面をスワイプ。<br>センサーが使えない環境では自動的にスワイプで遊べます。</div></div></div>
+  </section>
+
+  <section id="stageScreen" class="screen">
+    <div class="header"><button id="backTitle" class="secondary">←</button><div class="brand">STAGES</div><div class="chip" id="progressChip">0 / 20</div></div>
+    <div class="center"><div style="width:min(720px,100%);"><div class="menuTitle">ステージを選ぶ</div><div id="stageGrid" class="stageGrid"></div></div></div>
+  </section>
+
+  <section id="gameScreen" class="screen">
+    <div class="header"><button id="stageMenuBtn" class="secondary">STAGES</button><div class="titleLine"><div id="stageTitle">Stage 1</div><div id="stageMeta">0手 · BEST —</div></div><button id="pauseBtn" class="secondary">Ⅱ</button></div>
+
+    <div class="playArea">
+      <div class="boardShell">
+        <canvas id="gameCanvas"></canvas>
+        <div id="clearBurst" class="clearBurst">CLEAR</div>
+        <div id="sensorBar" class="sensorBar"></div>
+      </div>
+    </div>
+
+    <div class="bottom">
+      <button id="undoBtn" class="ctrl">UNDO</button>
+      <button id="restartBtn" class="ctrl">RESTART</button>
+      <button id="nextBtn" class="ctrl" style="display:none">NEXT →</button>
+    </div>
+
+    <div id="pauseOverlay" class="pause">
+      <div class="modal">
+        <h2>PAUSED</h2>
+        <p>盤面はそのままです。</p>
+        <div class="row">
+          <button id="resumeBtn" class="primary">RESUME</button>
+          <button id="pauseStagesBtn" class="secondary">STAGES</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="toast" class="toast"></div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
