@@ -9,10 +9,8 @@
 <style>
 :root{
   --bg:#0d1118;
-  --panel:#151b24;
   --text:#edf5ff;
   --muted:#94a3b8;
-  --accent:#8ee6ff;
 }
 
 *{
@@ -27,8 +25,8 @@ html,body{
   background:
     radial-gradient(circle at 50% 10%,#1b2b3a 0,#0d1118 45%,#090c12 100%);
   color:var(--text);
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",
-    "Hiragino Sans",sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,
+    "SF Pro Display","Hiragino Sans",sans-serif;
   overflow:hidden;
   touch-action:none;
 }
@@ -64,6 +62,16 @@ button{
   letter-spacing:.16em;
 }
 
+.chip{
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:999px;
+  padding:7px 11px;
+  font-size:12px;
+  color:#d9e5f4;
+  backdrop-filter:blur(10px);
+}
+
 .center{
   display:flex;
   align-items:center;
@@ -83,7 +91,12 @@ button{
   font-weight:900;
   letter-spacing:.16em;
   margin-left:.16em;
-  background:linear-gradient(130deg,#fff,#a6efff 45%,#b5c0ff);
+  background:linear-gradient(
+    130deg,
+    #fff,
+    #a6efff 45%,
+    #b5c0ff
+  );
   -webkit-background-clip:text;
   background-clip:text;
   color:transparent;
@@ -105,13 +118,18 @@ button{
 
 .primary{
   border:0;
-  background:linear-gradient(135deg,#8fe7ff,#8f9dff);
+  background:linear-gradient(
+    135deg,
+    #8fe7ff,
+    #8f9dff
+  );
   color:#071018;
   border-radius:16px;
   padding:14px 28px;
   font-weight:800;
   font-size:16px;
-  box-shadow:0 10px 35px rgba(127,214,255,.22);
+  box-shadow:
+    0 10px 35px rgba(127,214,255,.22);
 }
 
 .secondary{
@@ -126,6 +144,13 @@ button{
   color:var(--muted);
   margin-top:18px;
   line-height:1.6;
+}
+
+.menuTitle{
+  font-size:25px;
+  font-weight:800;
+  margin-bottom:14px;
+  text-align:center;
 }
 
 .stageGrid{
@@ -184,68 +209,23 @@ button{
   aspect-ratio:1;
   border-radius:26px;
   padding:9px;
-  background:linear-gradient(
-    145deg,
-    rgba(255,255,255,.13),
-    rgba(255,255,255,.025)
-  );
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.13),
+      rgba(255,255,255,.025)
+    );
   box-shadow:
     0 30px 80px rgba(0,0,0,.35),
     inset 0 1px 0 rgba(255,255,255,.11);
 }
 
-#board{
-  position:relative;
+#gameCanvas{
   width:100%;
   height:100%;
+  display:block;
   border-radius:19px;
-  overflow:hidden;
-  background:
-    linear-gradient(145deg,#19232d,#0d131a);
-}
-
-.cell{
-  position:absolute;
-  border:1px solid rgba(255,255,255,.055);
-}
-
-.wall{
-  position:absolute;
-  background:linear-gradient(
-    145deg,
-    rgba(255,255,255,.3),
-    rgba(80,95,110,.7)
-  );
-  border-radius:10px;
-  box-shadow:
-    0 0 16px rgba(120,150,180,.3),
-    inset 0 1px rgba(255,255,255,.25);
-}
-
-.goal{
-  position:absolute;
-  border:2px dashed rgba(210,230,255,.65);
-  border-radius:11px;
-  box-shadow:0 0 16px rgba(150,220,255,.3);
-  background:rgba(255,255,255,.025);
-}
-
-.block{
-  position:absolute;
-  border-radius:11px;
-  transition:
-    left .18s cubic-bezier(.2,.8,.2,1),
-    top .18s cubic-bezier(.2,.8,.2,1);
-  box-shadow:
-    0 0 20px var(--block-color),
-    inset 0 1px rgba(255,255,255,.55);
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255,255,255,.55),
-      var(--block-color) 25%,
-      color-mix(in srgb,var(--block-color) 55%,#000) 100%
-    );
+  touch-action:none;
 }
 
 .bottom{
@@ -296,7 +276,12 @@ button{
 
 .modal{
   width:min(92vw,390px);
-  background:linear-gradient(145deg,#1a2530,#121820);
+  background:
+    linear-gradient(
+      145deg,
+      #1a2530,
+      #121820
+    );
   border:1px solid rgba(255,255,255,.1);
   border-radius:24px;
   padding:24px;
@@ -326,7 +311,8 @@ button{
   letter-spacing:.08em;
   opacity:0;
   pointer-events:none;
-  text-shadow:0 0 30px rgba(150,240,255,.55);
+  text-shadow:
+    0 0 30px rgba(150,240,255,.55);
 }
 
 .clearBurst.show{
@@ -334,9 +320,12 @@ button{
 }
 
 @keyframes clear{
+
   0%{
     opacity:0;
-    transform:translate(-50%,-50%) scale(.6);
+    transform:
+      translate(-50%,-50%)
+      scale(.6);
   }
 
   20%{
@@ -345,8 +334,11 @@ button{
 
   100%{
     opacity:0;
-    transform:translate(-50%,-50%) scale(1.2);
+    transform:
+      translate(-50%,-50%)
+      scale(1.2);
   }
+
 }
 
 .sensorBar{
@@ -391,6 +383,7 @@ button{
 }
 
 @media (min-width:700px){
+
   .header{
     height:74px;
   }
@@ -402,9 +395,11 @@ button{
   .playArea{
     padding-bottom:24px;
   }
+
 }
 
 @media (max-width:420px){
+
   .logo{
     font-size:58px;
   }
@@ -412,6 +407,7 @@ button{
   .stageGrid{
     grid-template-columns:repeat(4,1fr);
   }
+
 }
 </style>
 </head>
@@ -420,23 +416,36 @@ button{
 
 <div id="app">
 
+<!-- ==================== TITLE ==================== -->
+
 <section id="titleScreen" class="screen active">
 
   <div class="header">
-    <div class="brand">TILT</div>
-    <div class="chip">TILT · THINK · SOLVE</div>
+
+    <div class="brand">
+      TILT
+    </div>
+
+    <div class="chip">
+      TILT · THINK · SOLVE
+    </div>
+
   </div>
 
   <div class="center">
+
     <div class="titleWrap">
 
-      <div class="logo">TILT</div>
+      <div class="logo">
+        TILT
+      </div>
 
       <div class="tag">
         傾ける。考える。解く。
       </div>
 
       <div class="row">
+
         <button id="playBtn" class="primary">
           PLAY
         </button>
@@ -444,18 +453,26 @@ button{
         <button id="stageBtn" class="secondary">
           STAGES
         </button>
+
       </div>
 
       <div class="hint">
+
         スマホを傾けるか、画面をスワイプ。<br>
-        センサーが使えない環境ではスワイプで遊べます。
+
+        センサーが使えない環境では
+        スワイプで遊べます。
+
       </div>
 
     </div>
+
   </div>
 
 </section>
 
+
+<!-- ==================== STAGE SELECT ==================== -->
 
 <section id="stageScreen" class="screen">
 
@@ -492,6 +509,8 @@ button{
 </section>
 
 
+<!-- ==================== GAME ==================== -->
+
 <section id="gameScreen" class="screen">
 
   <div class="header">
@@ -507,7 +526,7 @@ button{
       </div>
 
       <div id="stageMeta">
-        0手 · BEST —
+        0手 · BEST — · OPT 1
       </div>
 
     </div>
@@ -523,7 +542,8 @@ button{
 
     <div class="boardShell">
 
-      <div id="board"></div>
+      <!-- game.js が使うCanvas -->
+      <canvas id="gameCanvas"></canvas>
 
       <div id="clearBurst" class="clearBurst">
         CLEAR
@@ -546,12 +566,18 @@ button{
       RESTART
     </button>
 
-    <button id="nextBtn" class="ctrl" style="display:none">
+    <button
+      id="nextBtn"
+      class="ctrl"
+      style="display:none"
+    >
       NEXT →
     </button>
 
   </div>
 
+
+  <!-- ==================== PAUSE ==================== -->
 
   <div id="pauseOverlay" class="pause">
 
@@ -567,11 +593,17 @@ button{
 
       <div class="row">
 
-        <button id="resumeBtn" class="primary">
+        <button
+          id="resumeBtn"
+          class="primary"
+        >
           RESUME
         </button>
 
-        <button id="pauseStagesBtn" class="secondary">
+        <button
+          id="pauseStagesBtn"
+          class="secondary"
+        >
           STAGES
         </button>
 
@@ -589,6 +621,7 @@ button{
 </div>
 
 
+<!-- game.jsを読み込む -->
 <script src="game.js"></script>
 
 </body>
