@@ -38,7 +38,7 @@ function vibrate(ms=16){if(appState.settings.vibrate&&navigator.vibrate)navigato
 function cloneBlocks(blocks){return blocks.map(b=>({...b}))}
 function snapshot(){return JSON.stringify({blocks:appState.blocks,moves:appState.moves})}
 function restore(s){const x=JSON.parse(s);appState.blocks=x.blocks;appState.moves=x.moves;updateMeta();draw()}
-function makeStage(i){const st=STAGES[i];appState.stageIndex=i;appState.walls=new Set(st.walls.map(p=>`${p.x},${p.y}`));appState.blocks=cloneBlocks(st.blocks).map((b,i)=>({...b,id:i,w:b.w||1,h:b.h||1,goalHit:false}));appState.goals=st.goals.map(g=>({...g}));appState.moves=0;appState.history=[];appState.anim=null;appState.state='PLAYING';$('stageTitle').textContent=`${i+1}. ${st.title}`;updateMeta();$('clearBurst').classList.remove('show');setScreen('gameScreen');draw()}
+function makeStage(i){const st=STAGES[i];appState.stageIndex=i;appState.walls=new Set(st.walls.map(p=>`${p.x},${p.y}`));appState.blocks=cloneBlocks(st.blocks).map((b,i)=>({...b,id:i,w:b.w||1,h:b.h||1,goalHit:false}));appState.goals=st.goals.map(g=>({...g}));appState.moves=0;appState.history=[];appState.anim=null;appState.state='PLAYING';$('stageTitle').textContent=`${i+1}. ${st.title}`;updateMeta();$('clearBurst').classList.remove('show');setScreen('gameScreen');requestAnimationFrame(()=>{resize();draw()})}
 function updateMeta(){const st=STAGES[appState.stageIndex];const best=appState.progress.clear[st.id]?.moves; $('stageMeta').textContent=`${appState.moves}手 · BEST ${best??'—'} · OPT ${st.best}`;}
 
 function rectCells(b){const cells=[];for(let y=0;y<b.h;y++)for(let x=0;x<b.w;x++)cells.push({x:b.x+x,y:b.y+y});return cells}
